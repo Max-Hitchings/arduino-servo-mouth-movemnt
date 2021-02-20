@@ -5,7 +5,7 @@ import time
 import serial
 
 SMALLEST_DIST = 11 
-LARGEST_DIST = 44
+LARGEST_DIST = 46
 
 arduinoData =  serial.Serial('com4',9600)
 TOTAL_DIST = 180

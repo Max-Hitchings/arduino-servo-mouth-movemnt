@@ -3,12 +3,25 @@ import numpy as np
 import dlib
 import time
 import serial
+import math
+#from numToByteDict import numToByteDict
 
-SMALLEST_DIST = 11 
-LARGEST_DIST = 46
+SMALLEST_DIST = 7
+LARGEST_DIST = 33
 
-arduinoData =  serial.Serial('com4',9600)
+arduinoData =  serial.Serial('com7',9600)
 TOTAL_DIST = 180
+numToByteDict = {
+    10: "a",
+    11: "b",
+    12: "c",
+    13: "d",
+    14: "e",
+    15: "f",
+    16: "g",
+    17: "h",
+    18: "i"
+}
 
 cap = cv2.VideoCapture(0)
 
@@ -31,19 +44,24 @@ while True:
         
         distanceBetweenLips = bottomLip[1]-topLip[1]
 
-        degree = int(((distanceBetweenLips-11)*multiplyier)+20)
+        degree = int(((distanceBetweenLips-SMALLEST_DIST)*multiplyier)+20)
         if abs(latestRequest-degree) > 10:
             latestRequest = degree
             if degree > 180:
                 degree = 180
-            arduinoData.write(str(degree).encode())
-            print(f"sent {degree}")
+            degree = (round(degree, -1))/10
+            if degree<=9:
+                arduinoData.write(str(degree).encode())
+                print(f"sent {degree}")
+            else:
+                arduinoData.write(numToByteDict[degree].encode())
+                print(f"sent {numToByteDict[degree]}")
 
         cv2.circle(gray, topLip, 3, (255, 0, 0), -1)
         cv2.circle(gray, bottomLip, 3, (255, 0, 0), -1)
     
 
-    time.sleep(1)
+    #time.sleep(1)
     cv2.imshow("Frame", gray)
 
     key = cv2.waitKey(1)

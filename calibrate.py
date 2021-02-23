@@ -13,9 +13,9 @@ while True:
     _, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    faces = detector(gray)
+    faces = detector(frame)
     for face in faces:
-        landmarks = predictor(gray, face)
+        landmarks = predictor(frame, face)
         
         topLip = (landmarks.part(51).x, landmarks.part(51).y)
         bottomLip = (landmarks.part(57).x, landmarks.part(57).y)
@@ -29,10 +29,10 @@ while True:
             Smallest = distanceBetweenLips
             print(f"Smallest: {distanceBetweenLips}")
 
-        cv2.circle(gray, topLip, 3, (255, 0, 0), -1)
-        cv2.circle(gray, bottomLip, 3, (255, 0, 0), -1)
+        cv2.circle(frame, topLip, 3, (255, 0, 0), -1)
+        cv2.circle(frame, bottomLip, 3, (255, 0, 0), -1)
 
-    cv2.imshow("Frame", gray)
+    cv2.imshow("Frame", frame)
 
     key = cv2.waitKey(1)
     if key == 27:

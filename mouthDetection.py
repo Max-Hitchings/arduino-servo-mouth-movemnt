@@ -6,11 +6,11 @@ import serial
 import math
 #from numToByteDict import numToByteDict
 
-SMALLEST_DIST = 7
-LARGEST_DIST = 33
+SMALLEST_DIST = 13
+LARGEST_DIST = 50
 
 arduinoData =  serial.Serial('com7',9600)
-TOTAL_DIST = 180
+TOTAL_DIST = 160
 numToByteDict = {
     10: "a",
     11: "b",
@@ -35,9 +35,9 @@ while True:
     _, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    faces = detector(gray)
+    faces = detector(frame)
     for face in faces:
-        landmarks = predictor(gray, face)
+        landmarks = predictor(frame, face)
         
         topLip = (landmarks.part(51).x, landmarks.part(51).y)
         bottomLip = (landmarks.part(57).x, landmarks.part(57).y)
@@ -49,23 +49,23 @@ while True:
             latestRequest = degree
             if degree > 180:
                 degree = 180
-            degree = (round(degree, -1))/10
+            degree = int((round(degree, -1))/10)
             if degree<=9:
                 arduinoData.write(str(degree).encode())
                 print(f"sent {degree}")
             else:
                 arduinoData.write(numToByteDict[degree].encode())
-                print(f"sent {numToByteDict[degree]}")
+                print(f"sent {numToByteDict[degree]}, {degree} ")
 
-        cv2.circle(gray, topLip, 3, (255, 0, 0), -1)
-        cv2.circle(gray, bottomLip, 3, (255, 0, 0), -1)
+        cv2.circle(frame, topLip, 3, (255, 0, 0), -1)
+        cv2.circle(frame, bottomLip, 3, (255, 0, 0), -1)
     
 
     #time.sleep(1)
-    cv2.imshow("Frame", gray)
+    cv2.imshow("Frame", frame)
 
     key = cv2.waitKey(1)
     if key == 27:
         break
 
-arduinoData.write("90".encode())
+arduinoData.write("9".encode())
